@@ -38,18 +38,20 @@ def main():
         if key_lst[pg.K_LEFT]: move_value[0] -= 5
         if key_lst[pg.K_RIGHT]: move_value[0] += 5
         kk_rect.move_ip(move_value)
-        if not (is_not_in_screen(kk_rect)[0] and is_not_in_screen(kk_rect)[1]):
+        if not (is_in_screen(kk_rect)[0] and is_in_screen(kk_rect)[1]):
             kk_rect.move_ip(-move_value)
         screen.blit(kk_img, kk_rect)
         bomb_rect.move_ip(bomb_speed)
-        bomb_speed *= (np.full(2, 1, dtype=int) - is_not_in_screen(bomb_rect) * 2) * -1
+        bomb_speed *= (np.full(2, 1, dtype=int) - is_in_screen(bomb_rect) * 2) * -1
         screen.blit(bomb_surface, bomb_rect)
+        if kk_rect.colliderect(bomb_rect):
+            return # こうかとんと爆弾が接触していれば終了処理
         pg.display.update()
         tmr += 1
         clock.tick(50)
 
 
-def is_not_in_screen(target_rect : pg.Rect) -> np.array(bool, bool):
+def is_in_screen(target_rect : pg.Rect) -> np.array(bool, bool):
     """
     引数：こうかとんRect or 爆弾Rect
     戻り値：横方向・縦方向の真理値タプル（True：画面内／False：画面外）
