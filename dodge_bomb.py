@@ -7,7 +7,7 @@ import numpy as np
 
 WIDTH, HEIGHT = 1600, 900
 bomb_speed = np.asarray((5, 5))
-ACCS = np.arange(1, 11)
+ACCS = np.arange(1, 11) # 加速度を10段階で変更するため段階別倍率のリスト
 
 
 def main():
