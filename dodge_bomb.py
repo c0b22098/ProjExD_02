@@ -5,7 +5,7 @@ import pygame as pg
 import numpy as np
 
 
-WIDTH, HEIGHT = 1200, 700
+WIDTH, HEIGHT = 1600, 900
 bomb_speed = np.asarray((5, 5))
 ACCS = np.arange(1, 11)
 
@@ -23,7 +23,10 @@ def main():
     pg.draw.circle(bomb_surface, (255, 0, 0), (10, 10), 10)
     bomb_surface.set_colorkey((0, 0, 0))
     bomb_rect = bomb_surface.get_rect()
-    bomb_rect.center = random.randint(10,WIDTH-10), random.randint(10, HEIGHT-10)
+    while(True):
+        bomb_rect.center = random.randint(10,WIDTH-10), random.randint(10, HEIGHT-10)
+        if np.sqrt(np.sum((np.asarray(bomb_rect.center) - np.asarray(kk_rect.center)) ** 2)) >= 800:
+            break
     distance = np.asarray(((bomb_rect.center[0] - kk_rect.center[0]) , (bomb_rect.center[1] - kk_rect.center[1]))) 
     bomb_move = distance / np.sqrt(np.sum(distance ** 2)) * np.sqrt(50)
     clock = pg.time.Clock()
@@ -70,7 +73,7 @@ def main():
             screen.blit(kk_img_gameover, kk_rect)
             screen.blit(bomb_surface, bomb_rect)
             pg.display.update()
-            pg.time.delay(5000)
+            pg.time.delay(3000)
             return # こうかとんと爆弾が接触していれば終了処理
         pg.display.update()
         tmr += 1
