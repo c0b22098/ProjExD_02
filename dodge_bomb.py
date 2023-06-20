@@ -7,10 +7,11 @@ import numpy as np
 
 WIDTH, HEIGHT = 1200, 700
 bomb_speed = np.asarray((5, 5))
+ACCS = np.arange(1, 11)
 
 
 def main():
-    global WIDTH, HEIGHT, bomb_speed
+    global WIDTH, HEIGHT, ACCS, bomb_speed
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("ex02/fig/pg_bg.jpg")
@@ -43,10 +44,13 @@ def main():
             kk_rect.move_ip(-move_value)
         if np.array_equal(move_value, (0, 0)):
             kk_rotation = 270
+            is_flip = False
         else:
-            kk_rotation = math.atan2(move_value[0], move_value[1]) * 180 / np.pi
-        screen.blit(pg.transform.rotozoom(kk_img, kk_rotation + 90, 1.0), kk_rect)
-        # bomb_rect.move_ip(bomb_speed)
+            kk_rotation = math.atan2(abs(move_value[0]) * -1, move_value[1]) * 180 / np.pi
+            is_flip = move_value[0] >= 0
+        kk_img_roto = pg.transform.rotozoom(kk_img, kk_rotation + 90, 1.0)
+        screen.blit(pg.transform.flip(kk_img_roto, is_flip, False), kk_rect)
+        bomb_rect.move_ip(bomb_speed * ACCS[min(tmr // 100, 9)])
         bomb_speed *= (np.full(2, 1, dtype=int) - is_in_screen(bomb_rect) * 2) * -1
         screen.blit(bomb_surface, bomb_rect)
         if kk_rect.colliderect(bomb_rect):
