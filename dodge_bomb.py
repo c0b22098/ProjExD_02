@@ -18,17 +18,17 @@ def main():
     kk_img = pg.image.load("ex02/fig/3.png")
     kk_img = pg.transform.rotozoom(kk_img, 0, 2.0)
     kk_rect = kk_img.get_rect()
-    kk_rect.center = 900, 400
-    bomb_surface = pg.Surface((20, 20))
+    kk_rect.center = 900, 400 # 初期位置設定
+    bomb_surface = pg.Surface((20, 20)) # 爆弾用サーフェイス
     pg.draw.circle(bomb_surface, (255, 0, 0), (10, 10), 10)
     bomb_surface.set_colorkey((0, 0, 0))
     bomb_rect = bomb_surface.get_rect()
     while(True):
         bomb_rect.center = random.randint(10,WIDTH-10), random.randint(10, HEIGHT-10)
         if np.sqrt(np.sum((np.asarray(bomb_rect.center) - np.asarray(kk_rect.center)) ** 2)) >= 800:
-            break
+            break # 爆弾とこうかとんの距離が８００以上なら進める
     distance = np.asarray(((bomb_rect.center[0] - kk_rect.center[0]) , (bomb_rect.center[1] - kk_rect.center[1]))) 
-    bomb_move = distance / np.sqrt(np.sum(distance ** 2)) * np.sqrt(50)
+    bomb_move = distance / np.sqrt(np.sum(distance ** 2)) * np.sqrt(50) # 初速設定
     clock = pg.time.Clock()
     tmr = 0
 
@@ -39,37 +39,43 @@ def main():
         
         screen.blit(bg_img, [0, 0])
         key_lst = pg.key.get_pressed()
-        move_value = np.asarray((0, 0), dtype=int)
+        move_value = np.asarray((0, 0), dtype=int) # 速度更新用numpy array
         if key_lst[pg.K_UP]: move_value[1] -= 5
         if key_lst[pg.K_DOWN]: move_value[1] += 5
         if key_lst[pg.K_LEFT]: move_value[0] -= 5
         if key_lst[pg.K_RIGHT]: move_value[0] += 5
         kk_rect.move_ip(move_value)
+        # 画面外にこうかとんがいたら
         if not (is_in_screen(kk_rect)[0] and is_in_screen(kk_rect)[1]):
-            kk_rect.move_ip(-move_value)
+            # 移動をキャンセル
+            kk_rect.move_ip(-move_value) 
+        # 操作がない場合
         if np.array_equal(move_value, (0, 0)):
             kk_rotation = 270
             is_flip = False
         else:
+            # 操作がある場合
             kk_rotation = math.atan2(abs(move_value[0]) * -1, move_value[1]) * 180 / np.pi
             is_flip = move_value[0] >= 0
         kk_img_roto = pg.transform.rotozoom(kk_img, kk_rotation + 90, 1.0)
         screen.blit(pg.transform.flip(kk_img_roto, is_flip, False), kk_rect)
+        # 爆弾の挙動変更履歴
         """
         bomb_rect.move_ip(bomb_speed * ACCS[min(tmr // 100, 9)])
         bomb_speed *= (np.full(2, 1, dtype=int) - is_in_screen(bomb_rect) * 2) * -1
         """
         distance = np.asarray(((bomb_rect.center[0] - kk_rect.center[0]) , (bomb_rect.center[1] - kk_rect.center[1]))) 
+        # こうかとんと爆弾の距離が500離れた時のみ移動ベクトルを更新
         if np.sqrt(np.sum(distance ** 2)) >= 500:
             bomb_move = distance / np.sqrt(np.sum(distance ** 2)) * np.sqrt(50)
             pg.draw.circle(bomb_surface, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (10, 10), 10)
+        # 爆弾が画面外に出た時移動ベクトルを反転
         bomb_move *= (np.full(2, 1, dtype=int) - is_in_screen(bomb_rect) * 2) * -1
         bomb_rect.center = (min(bomb_rect.center[0], WIDTH-10), min(bomb_rect.center[1], HEIGHT-10))
         bomb_rect.move_ip(-bomb_move)
         screen.blit(bomb_surface, bomb_rect)
         if kk_rect.colliderect(bomb_rect):
             kk_img_gameover = pg.transform.rotozoom(pg.image.load("ex02/fig/8.png"), 0, 2.0)
-            kk_img_gameover.get_rect().center = kk_rect.center
             screen.blit(bg_img, [0, 0])
             screen.blit(kk_img_gameover, kk_rect)
             screen.blit(bomb_surface, bomb_rect)
