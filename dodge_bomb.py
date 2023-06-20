@@ -64,6 +64,7 @@ def main():
             bomb_move = distance / np.sqrt(np.sum(distance ** 2)) * np.sqrt(50)
             pg.draw.circle(bomb_surface, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (10, 10), 10)
         bomb_move *= (np.full(2, 1, dtype=int) - is_in_screen(bomb_rect) * 2) * -1
+        bomb_rect.center = (min(bomb_rect.center[0], WIDTH-10), min(bomb_rect.center[1], HEIGHT-10))
         bomb_rect.move_ip(-bomb_move)
         screen.blit(bomb_surface, bomb_rect)
         if kk_rect.colliderect(bomb_rect):
