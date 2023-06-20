@@ -23,7 +23,7 @@ def main():
     pg.draw.circle(bomb_surface, (255, 0, 0), (10, 10), 10)
     bomb_surface.set_colorkey((0, 0, 0))
     bomb_rect = bomb_surface.get_rect()
-    bomb_rect.center = random.randint(0,WIDTH), random.randint(0, HEIGHT)
+    bomb_rect.center = random.randint(10,WIDTH-10), random.randint(10, HEIGHT-10)
     distance = np.asarray(((bomb_rect.center[0] - kk_rect.center[0]) , (bomb_rect.center[1] - kk_rect.center[1]))) 
     bomb_move = distance / np.sqrt(np.sum(distance ** 2)) * np.sqrt(50)
     clock = pg.time.Clock()
@@ -59,9 +59,9 @@ def main():
         distance = np.asarray(((bomb_rect.center[0] - kk_rect.center[0]) , (bomb_rect.center[1] - kk_rect.center[1]))) 
         if np.sqrt(np.sum(distance ** 2)) >= 500:
             bomb_move = distance / np.sqrt(np.sum(distance ** 2)) * np.sqrt(50)
+            pg.draw.circle(bomb_surface, (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)), (10, 10), 10)
         bomb_move *= (np.full(2, 1, dtype=int) - is_in_screen(bomb_rect) * 2) * -1
         bomb_rect.move_ip(-bomb_move)
-        print(bomb_rect.center)
         screen.blit(bomb_surface, bomb_rect)
         if kk_rect.colliderect(bomb_rect):
             kk_img_gameover = pg.transform.rotozoom(pg.image.load("ex02/fig/8.png"), 0, 2.0)
