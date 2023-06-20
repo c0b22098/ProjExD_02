@@ -1,3 +1,4 @@
+import math
 import random
 import sys
 import pygame as pg
@@ -40,8 +41,12 @@ def main():
         kk_rect.move_ip(move_value)
         if not (is_in_screen(kk_rect)[0] and is_in_screen(kk_rect)[1]):
             kk_rect.move_ip(-move_value)
-        screen.blit(kk_img, kk_rect)
-        bomb_rect.move_ip(bomb_speed)
+        if np.array_equal(move_value, (0, 0)):
+            kk_rotation = 270
+        else:
+            kk_rotation = math.atan2(move_value[0], move_value[1]) * 180 / np.pi
+        screen.blit(pg.transform.rotozoom(kk_img, kk_rotation + 90, 1.0), kk_rect)
+        # bomb_rect.move_ip(bomb_speed)
         bomb_speed *= (np.full(2, 1, dtype=int) - is_in_screen(bomb_rect) * 2) * -1
         screen.blit(bomb_surface, bomb_rect)
         if kk_rect.colliderect(bomb_rect):
