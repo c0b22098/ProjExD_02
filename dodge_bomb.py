@@ -5,9 +5,11 @@ import numpy as np
 
 
 WIDTH, HEIGHT = 1200, 700
+bomb_speed = np.asarray((5, 5))
 
 
 def main():
+    global WIDTH, HEIGHT, bomb_speed
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     bg_img = pg.image.load("ex02/fig/pg_bg.jpg")
@@ -36,13 +38,28 @@ def main():
         if key_lst[pg.K_LEFT]: move_value[0] -= 5
         if key_lst[pg.K_RIGHT]: move_value[0] += 5
         kk_rect.move_ip(move_value)
+        if not (is_not_in_screen(kk_rect)[0] and is_not_in_screen(kk_rect)[1]):
+            kk_rect.move_ip(-move_value)
         screen.blit(kk_img, kk_rect)
-        bomb_rect.move_ip(5, 5)
+        bomb_rect.move_ip(bomb_speed)
+        bomb_speed *= (np.full(2, 1, dtype=int) - is_not_in_screen(bomb_rect) * 2) * -1
         screen.blit(bomb_surface, bomb_rect)
         pg.display.update()
         tmr += 1
         clock.tick(50)
 
+
+def is_not_in_screen(target_rect : pg.Rect) -> np.array(bool, bool):
+    """
+    引数：こうかとんRect or 爆弾Rect
+    戻り値：横方向・縦方向の真理値タプル（True：画面内／False：画面外）
+    """
+    
+    is_is = np.asarray((None, None), dtype=bool)
+    is_is[1] = (target_rect.top >= 0 and target_rect.bottom <= HEIGHT)
+    is_is[0] = (target_rect.left >= 0 and target_rect.right <= WIDTH)
+    return is_is
+         
 
 if __name__ == "__main__":
     pg.init()
