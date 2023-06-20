@@ -24,6 +24,8 @@ def main():
     bomb_surface.set_colorkey((0, 0, 0))
     bomb_rect = bomb_surface.get_rect()
     bomb_rect.center = random.randint(0,WIDTH), random.randint(0, HEIGHT)
+    distance = np.asarray(((bomb_rect.center[0] - kk_rect.center[0]) , (bomb_rect.center[1] - kk_rect.center[1]))) 
+    bomb_move = distance / np.sqrt(np.sum(distance ** 2)) * np.sqrt(50)
     clock = pg.time.Clock()
     tmr = 0
 
@@ -50,8 +52,16 @@ def main():
             is_flip = move_value[0] >= 0
         kk_img_roto = pg.transform.rotozoom(kk_img, kk_rotation + 90, 1.0)
         screen.blit(pg.transform.flip(kk_img_roto, is_flip, False), kk_rect)
+        """
         bomb_rect.move_ip(bomb_speed * ACCS[min(tmr // 100, 9)])
         bomb_speed *= (np.full(2, 1, dtype=int) - is_in_screen(bomb_rect) * 2) * -1
+        """
+        distance = np.asarray(((bomb_rect.center[0] - kk_rect.center[0]) , (bomb_rect.center[1] - kk_rect.center[1]))) 
+        if np.sqrt(np.sum(distance ** 2)) >= 500:
+            bomb_move = distance / np.sqrt(np.sum(distance ** 2)) * np.sqrt(50)
+        bomb_move *= (np.full(2, 1, dtype=int) - is_in_screen(bomb_rect) * 2) * -1
+        bomb_rect.move_ip(-bomb_move)
+        print(bomb_rect.center)
         screen.blit(bomb_surface, bomb_rect)
         if kk_rect.colliderect(bomb_rect):
             kk_img_gameover = pg.transform.rotozoom(pg.image.load("ex02/fig/8.png"), 0, 2.0)
