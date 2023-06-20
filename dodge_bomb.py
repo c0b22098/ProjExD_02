@@ -54,6 +54,13 @@ def main():
         bomb_speed *= (np.full(2, 1, dtype=int) - is_in_screen(bomb_rect) * 2) * -1
         screen.blit(bomb_surface, bomb_rect)
         if kk_rect.colliderect(bomb_rect):
+            kk_img_gameover = pg.transform.rotozoom(pg.image.load("ex02/fig/8.png"), 0, 2.0)
+            kk_img_gameover.get_rect().center = kk_rect.center
+            screen.blit(bg_img, [0, 0])
+            screen.blit(kk_img_gameover, kk_rect)
+            screen.blit(bomb_surface, bomb_rect)
+            pg.display.update()
+            pg.time.delay(5000)
             return # こうかとんと爆弾が接触していれば終了処理
         pg.display.update()
         tmr += 1
