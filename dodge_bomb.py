@@ -1,6 +1,7 @@
 import random
 import sys
 import pygame as pg
+import numpy as np
 
 
 WIDTH, HEIGHT = 1200, 700
@@ -12,6 +13,8 @@ def main():
     bg_img = pg.image.load("ex02/fig/pg_bg.jpg")
     kk_img = pg.image.load("ex02/fig/3.png")
     kk_img = pg.transform.rotozoom(kk_img, 0, 2.0)
+    kk_rect = kk_img.get_rect()
+    kk_rect.center = 900, 400
     bomb_surface = pg.Surface((20, 20))
     pg.draw.circle(bomb_surface, (255, 0, 0), (10, 10), 10)
     bomb_surface.set_colorkey((0, 0, 0))
@@ -26,7 +29,14 @@ def main():
                 return
         
         screen.blit(bg_img, [0, 0])
-        screen.blit(kk_img, [900, 400])
+        key_lst = pg.key.get_pressed()
+        move_value = np.asarray((0, 0), dtype=int)
+        if key_lst[pg.K_UP]: move_value[1] -= 5
+        if key_lst[pg.K_DOWN]: move_value[1] += 5
+        if key_lst[pg.K_LEFT]: move_value[0] -= 5
+        if key_lst[pg.K_RIGHT]: move_value[0] += 5
+        kk_rect.move_ip(move_value)
+        screen.blit(kk_img, kk_rect)
         bomb_rect.move_ip(5, 5)
         screen.blit(bomb_surface, bomb_rect)
         pg.display.update()
